@@ -1,0 +1,19 @@
+<ion-header translucent="" class="header header-md header-translucent header-translucent-md hydrated">
+    <ion-toolbar class="hydrated">
+      <ion-title class="title-md hydrated">Modal Content</ion-title>
+      <ion-buttons slot="end" class="sc-ion-buttons-md-h sc-ion-buttons-md-s hydrated">
+        <ion-button (click)="dismissModal()" class="button button-clear ion-activatable ion-focusable hydrated">Close</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+<ion-content>
+    <ion-list class="list list-md hydrated">
+        <ion-item *ngFor="let device of filteredDevices" (click)="selectDevice(device)" class="in-list item ion-focusable hydrated item-label">
+          <ion-label class="sc-ion-label-md-h sc-ion-label-md-s hydrated">
+            <h2>{{device.name}}</h2>
+            <!-- <p>Sneaky little hobbitses!</p> -->
+          </ion-label>
+        </ion-item>
+      </ion-list>
+</ion-content>
