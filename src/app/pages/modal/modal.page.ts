@@ -27,7 +27,7 @@ export class ModalPage implements OnInit {
   }
 
   public selectDevice(device: any) {
-    this.dismissModal(device);
+    this.dismissModal({ device: device });
   }
 
 }

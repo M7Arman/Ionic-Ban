@@ -25,7 +25,7 @@ export class Tab1Page {
     this.scan();
   }
 
-  public async onTmpChange(event: any): Promise<any> {
+  public async onTempChange(event: any): Promise<any> {
     this.temp = event.target.value;
   }
 
@@ -35,17 +35,13 @@ export class Tab1Page {
       componentProps: { devices: this.devices }
     });
     await modal.present();
-    const data: any = await modal.onDidDismiss();
-    this.selectedDevice = data.name;
-    await this.showToast(this.selectedDevice.name);
-  }
-
-  private async presentModal(devices: string[]) {
-    const modal = await this.modalController.create({
-      component: ModalPage,
-      componentProps: { devices: devices }
-    });
-    await modal.present();
+    const { data }: any = await modal.onDidDismiss();
+    this.selectedDevice = data.device;
+    await this.ble.connect(this.selectedDevice.id).subscribe(
+      peripheral => this.onConnected(peripheral),
+      peripheral => this.onDeviceDisconnected(peripheral)
+    );
+    await this.showToast(`Connected to ${this.selectedDevice.name}`);
   }
 
   private scan() {
@@ -57,7 +53,7 @@ export class Tab1Page {
       error => this.scanError(error)
     );
 
-    setTimeout(this.setStatus.bind(this), 10000, 'Scan complete');
+    setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
   }
 
   private async onDeviceDiscovered(device) {
@@ -89,6 +85,25 @@ export class Tab1Page {
 
   private deviceSelected(device) {
     console.log(JSON.stringify(device) + ' selected');
+  }
+
+  private onConnected(selectedDevice) {
+    this.ngZone.run(() => {
+      this.setStatus('');
+    });
+  }
+
+  private async onDeviceDisconnected(selectedDevice) {
+    await this.showToast('The peripheral unexpectedly disconnected');
+  }
+
+  // Disconnect peripheral when leaving the page
+  private ionViewWillLeave() {
+    console.log('ionViewWillLeave disconnecting Bluetooth');
+    this.ble.disconnect(this.selectedDevice.id).then(
+      () => console.log('Disconnected ' + JSON.stringify(this.selectedDevice)),
+      () => console.log('ERROR disconnecting ' + JSON.stringify(this.selectedDevice))
+    );
   }
 
 }
